@@ -82,7 +82,7 @@ class Algorithm(threading.Thread):
         # Loop until you find the end
         while len(self.open_list) > 0:
             if self.aniplot:
-                time.sleep(0.015)
+                time.sleep(0.025)
             # Get the current node
             current_node = self.open_list[0]
             current_index = 0
@@ -176,8 +176,8 @@ class Algorithm(threading.Thread):
             self.ax.scatter3D(df_c['x'], df_c['y'], df_c['z'], color='cyan', linewidths=2)
             s_p = self.st_node.position
             e_p = self.ed_node.position
-            self.ax.scatter3D(s_p[0], s_p[1], s_p[2], color='green', linewidths=5)
-            self.ax.scatter3D(e_p[0], e_p[1], e_p[2], color='red', linewidths=5)
+            self.ax.scatter3D(s_p[1], s_p[0], s_p[2], color='green', linewidths=5)
+            self.ax.scatter3D(e_p[1], e_p[0], e_p[2], color='red', linewidths=5)
 
             title = 'Realtime Trajectory:'
             self.ax.set_title(title)
@@ -187,7 +187,7 @@ class Algorithm(threading.Thread):
             self.ax.set_xlim([0, GRID])
             self.ax.set_ylim([0, GRID])
             self.ax.set_zlim([0, GRID])
-            time.sleep(0.01)
+            time.sleep(0.02)
         else:
             plt.close()
             graph = DataFrame(self.graph_list)
