@@ -10,7 +10,7 @@
 
 ## Environment
 <p align="justify"> 
-  <img src="https://i.imgur.com/cY9ANFu.png" alt="CubeAstar" align="right" width="320">
+  <img src="https://i.imgur.com/IlQDpai.png" alt="CubeAstar" align="right" width="320">
   <a>This project has the purpose of elucidating in a graphic way the functioning of the pathfinding algorithm A* in a tri-dimentional interface. However, it can be used to perform some kind of academic research about it.</a>  
 </p>
   
