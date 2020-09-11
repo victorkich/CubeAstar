@@ -1,6 +1,5 @@
 from matplotlib.animation import FuncAnimation
 from matplotlib import pyplot as plt
-from mpl_toolkits import mplot3d
 from pandas import DataFrame
 from tqdm import tqdm
 import numpy as np
@@ -18,8 +17,17 @@ fig = plt.figure()
 
 class Node:
     """
-        Basic informations about each node
+        Basic information about each node.
+
+            Args:
+                parent (Node): this variable carry a father Node object.
+                position (tuple): tuple containing x, y and z values.
+
+            Returns:
+                bool: return True if this node is in the same position.
+
     """
+
     def __init__(self, parent=None, position=None):
         self.parent = parent
         self.position = position
@@ -34,8 +42,11 @@ class Node:
 
 class Algorithm(threading.Thread):
     """
-        Class where the A* will be run inside and plotting
-        in real time the trajectory reached.
+        Class where the A* will be run inside and plotting in real time the trajectory reached.
+
+            Args:
+                aniplot (bool): aniplot is a bool value that enable or disable realtime 3d plotting.
+
     """
 
     def __init__(self, aniplot=True):
@@ -47,11 +58,17 @@ class Algorithm(threading.Thread):
         self.end_point = (None, None, None)
 
     def run(self):
+        """
+            This is the core loop what is executed in the thread called by .start() wrapper.
+            Here the path of all environment is processed.
+
+        """
+
         for _ in tqdm(range(LOOP)):
-            factible = False
-            while not factible:
-                start_point, end_point, generated_grid = self.generate_environment()
-                factible, total_time, astar_path = self.astar(generated_grid,  start_point, end_point)
+            feasible = False
+            while not feasible:
+                start_point, end_point, generated_grid = generate_environment()
+                feasible, total_time, astar_path = self.astar(generated_grid,  start_point, end_point)
                 time.sleep(0.03)
 
             graph_dict = {'k': len(astar_path), 'time': total_time}
@@ -60,9 +77,26 @@ class Algorithm(threading.Thread):
         self.aniplot = False
         time.sleep(.5)
 
-
     def astar(self, grid, start, end):
-        """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+        """
+             This is the core function of astar algorithm. Here the path between start and end nodes
+             inside the grid is calculated interactively.
+
+                Args:
+                    grid (numpy.array): the grid is a binary environment, one array with
+                                        shape=(GRID, GRID, GRID) where all of the values either 0 or 1.
+                                        1 is the obstacle and 0 is the free space.
+                    start (tuple): tuple with position x, y and z
+                    end (tuple): tuple with position x, y and z
+
+                Returns:
+                    bool: first value on return is the feasible bool. That indicates if the environment is
+                    feasible or not.
+                    float: second value on return is the time float. This indicates how long it took to
+                    process the data and solved the environment.
+                    list: third value on return is the path list. This indicates what nodes the path pass to
+                    travel from start to end.
+        """
 
         time_start = time.time()
 
@@ -106,14 +140,12 @@ class Algorithm(threading.Thread):
                     path.append(current.position)
                     current = current.parent
                 time_end = time.time() - time_start
-                return True, time_end, path[::-1]  # Return total time and reversed path
+                return True, time_end, path[::-1]  # Return factible bool, total time and reversed path
 
-            # Lista de possiveis movimentos
+            # listing all of possible movements and generate a children list
             movements = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (0, 0, -1), (0, -1, 0), (-1, 0, 0)]
-            # Generate children
             children = []
             for new_position in movements:  # Adjacent squares
-
                 # Get node position
                 node_position = tuple(current_node.position[i] + new_position[i] for i in range(3))
                 # Make sure within range
@@ -149,23 +181,16 @@ class Algorithm(threading.Thread):
                 # Add the child to the open list
                 self.open_list.append(child)
 
-    def generate_environment(self):
-        p_grid = np.random.choice(a=[0, 1], size=(GRID, GRID, GRID), p=[1.-GAMMA, GAMMA])
-
-        start_end = [False, False]
-        while not all(start_end):
-            point = tuple(np.random.randint((0, 0, 0), (GRID, GRID, GRID)))
-            if not p_grid[point]:
-                if not start_end[0]:
-                    p_start = point
-                    start_end[0] = True
-                else:
-                    p_end = point
-                    start_end[1] = True
-
-        return p_start, p_end, p_grid
-
     def animate(self, i):
+        """
+            Plot in realtime a 3d graph with scatters using matplotlib. This only occur if self.aniplot
+            had True, else the distance vs time 2d graph is plotted in the end of algorithm execution.
+
+                Args:
+                    self (object): just a self object to get the others variables of the class
+
+            """
+
         if self.aniplot:
             self.ax.clear()
             p_o = [o.position for o in self.open_list]
@@ -176,8 +201,8 @@ class Algorithm(threading.Thread):
             self.ax.scatter3D(df_c['x'], df_c['y'], df_c['z'], color='cyan', linewidths=2)
             s_p = self.st_node.position
             e_p = self.ed_node.position
-            self.ax.scatter3D(s_p[1], s_p[0], s_p[2], color='green', linewidths=5)
-            self.ax.scatter3D(e_p[1], e_p[0], e_p[2], color='red', linewidths=5)
+            self.ax.scatter3D(s_p[0], s_p[1], s_p[2], color='green', linewidths=5)
+            self.ax.scatter3D(e_p[0], e_p[1], e_p[2], color='red', linewidths=5)
 
             title = 'Realtime Trajectory:'
             self.ax.set_title(title)
@@ -196,6 +221,36 @@ class Algorithm(threading.Thread):
             plt.title('Distance(un) x Time(s) on {} environments with {}% of obstacles:'.format(LOOP, GAMMA * 100))
             plt.legend(['Time'])
             plt.show()
+
+
+def generate_environment():
+    """
+        This function generate an environment using global parameters how input, because that it don't
+        have arguments as input. GRID and GAMMA create one numpy.array carrying binary values with tree
+        dimensions. Where 0 is the free positions and 1 is obstacles. This function also generate two
+        point: start and end.
+
+            Returns:
+                tuple: start point containing x, y and z coordinates.
+                tuple: end point containing x, y and z coordinates.
+                numpy.array: binary grid of environment with shape=(GRID, GRID, GRID).
+
+    """
+
+    p_grid = np.random.choice(a=[0, 1], size=(GRID, GRID, GRID), p=[1.-GAMMA, GAMMA])
+
+    start_end = [False, False]
+    while not all(start_end):
+        point = tuple(np.random.randint((0, 0, 0), (GRID, GRID, GRID)))
+        if not p_grid[point]:
+            if not start_end[0]:
+                p_start = point
+                start_end[0] = True
+            else:
+                p_end = point
+                start_end[1] = True
+
+    return p_start, p_end, p_grid
 
 
 def main():
