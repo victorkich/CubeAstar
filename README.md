@@ -32,6 +32,6 @@ pip3 install -r requirements.txt
 <p align="center"> 
   <img src="media/cubestar.gif" alt="CubeStar"/>
   
-  <a><em>If you liked this repository, please don't forget to starred it!</em></a>
+  <i>If you liked this repository, please don't forget to starred it!</i>
   <img src="https://img.shields.io/github/stars/victorkich/CubeAstar?style=social"/>
 </p>
