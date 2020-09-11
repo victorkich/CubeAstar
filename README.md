@@ -24,6 +24,14 @@
 pip3 install -r requirements.txt
 ```
 
+<p align="justify"> 
+ <a>To execute the code just use:</a>
+</p>
+
+```shell
+python3 cube.py
+```
+
 ## Objectives
 <p align="justify"> 
   The environment generates parameterized obstacles in a random way and its actuation interval can also be configured. The green point is the starting point of the search algorithm and the red point the end point, the objective. To perform tests using the "maximum speed" of processing I strongly recommend disabling the graphical interface by changing the <i><b>PLOT</b></i> parameter to <i><b>False</b></i>.
