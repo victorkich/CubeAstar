@@ -1,4 +1,4 @@
-<h1 align="center">Using the pathfinding algorithm A* to solve the problem of navigation on tri-dimentional grid.</h1>
+<h1 align="center">Using the pathfinding algorithm A* to solve the problem of navigation on tri-dimentional grid</h1>
 
 <p align="center"> 
   <img src="https://img.shields.io/badge/Matplotlib-v3.3.1-blue"/>
